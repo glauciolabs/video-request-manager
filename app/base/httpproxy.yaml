@@ -1,0 +1,32 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: video-request-manager
+spec:
+  virtualhost:
+    fqdn: vrm.example.com
+  routes:
+    - conditions:
+        - prefix: /api
+      pathRewritePolicy:
+        replacePrefix:
+          - prefix: /api
+            replacement: /
+      services:
+        - name: api-gateway
+          port: 8080
+    - services:
+        - name: frontend
+          port: 3000
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: video-request-manager-admin
+spec:
+  virtualhost:
+    fqdn: admin.vrm.example.com
+  routes:
+    - services:
+        - name: admin-frontend
+          port: 3006

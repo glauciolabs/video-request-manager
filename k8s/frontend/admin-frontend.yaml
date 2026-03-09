@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-frontend
+  namespace: video-request-manager
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-frontend
+  template:
+    metadata:
+      labels:
+        app: admin-frontend
+    spec:
+      containers:
+        - name: admin-frontend
+          image: ghcr.io/glauciolabs/video-request-manager-admin-frontend:latest
+          ports:
+            - containerPort: 3006
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-frontend
+  namespace: video-request-manager
+spec:
+  selector:
+    app: admin-frontend
+  ports:
+    - port: 3006
+      targetPort: 3006

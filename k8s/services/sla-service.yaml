@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sla-service
+  namespace: video-request-manager
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sla-service
+  template:
+    metadata:
+      labels:
+        app: sla-service
+    spec:
+      containers:
+        - name: sla-service
+          image: ghcr.io/glauciolabs/video-request-manager-sla-service:latest
+          ports:
+            - containerPort: 3004
+          env:
+            - name: PORT
+              value: "3004"
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sla-service
+  namespace: video-request-manager
+spec:
+  selector:
+    app: sla-service
+  ports:
+    - port: 3004
+      targetPort: 3004

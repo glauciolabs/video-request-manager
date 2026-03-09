@@ -1,0 +1,15 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: video-request-manager
+spec:
+  virtualhost:
+    fqdn: vrm-dev.example.com
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: video-request-manager-admin
+spec:
+  virtualhost:
+    fqdn: admin.vrm-dev.example.com

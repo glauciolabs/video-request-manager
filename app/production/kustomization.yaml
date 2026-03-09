@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../base
+
+images:
+  - name: ghcr.io/glauciolabs/video-request-manager-frontend
+    newTag: v0.1.0
+  - name: ghcr.io/glauciolabs/video-request-manager-admin-frontend
+    newTag: v0.1.0
+  - name: ghcr.io/glauciolabs/video-request-manager-gateway
+    newTag: v0.1.0
+  - name: ghcr.io/glauciolabs/video-request-manager-order-service
+    newTag: v0.1.0
+  - name: ghcr.io/glauciolabs/video-request-manager-user-service
+    newTag: v0.1.0
+  - name: ghcr.io/glauciolabs/video-request-manager-notification-service
+    newTag: v0.1.0
+  - name: ghcr.io/glauciolabs/video-request-manager-sla-service
+    newTag: v0.1.0
+  - name: ghcr.io/glauciolabs/video-request-manager-report-service
+    newTag: v0.1.0
+
+patches:
+  - path: patch-configmap.yaml
+  - path: patch-httpproxy.yaml

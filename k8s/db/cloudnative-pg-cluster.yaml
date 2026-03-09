@@ -1,0 +1,22 @@
+# Requires CloudNativePG operator installed in the cluster.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: vrm-postgres
+  namespace: video-request-manager
+spec:
+  instances: 1
+  storage:
+    size: 10Gi
+  bootstrap:
+    initdb:
+      database: video_request_manager
+      owner: video_request
+      secret:
+        name: vrm-db-user
+  managed:
+    roles:
+      - name: video_request
+        login: true
+  backup:
+    target: primary

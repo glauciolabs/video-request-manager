@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vrm-db-backup
+  namespace: video-request-manager
+spec:
+  schedule: "0 */6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:16
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  apt-get update && apt-get install -y git && \
+                  /scripts/db-backup.sh
+              envFrom:
+                - configMapRef:
+                    name: vrm-config
+                - secretRef:
+                    name: vrm-secrets
+              volumeMounts:
+                - name: backup-script
+                  mountPath: /scripts
+                  readOnly: true
+          volumes:
+            - name: backup-script
+              configMap:
+                name: vrm-backup-script
+                defaultMode: 0755
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vrm-backup-script
+  namespace: video-request-manager
+data:
+  db-backup.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    STAMP="$(date +%Y%m%d-%H%M%S)"
+    export PGPASSWORD="$POSTGRES_PASSWORD"
+    pg_dump -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" "$POSTGRES_DB" > "/tmp/vrm-${STAMP}.sql"
+    git clone "$BACKUP_REPO_URL" /tmp/repo
+    cp "/tmp/vrm-${STAMP}.sql" /tmp/repo/
+    cd /tmp/repo
+    git config user.email "backup-bot@vrm.local"
+    git config user.name "backup-bot"
+    git add "vrm-${STAMP}.sql"
+    git commit -m "chore: db backup ${STAMP}" || true
+    git push

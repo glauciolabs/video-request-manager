@@ -1,0 +1,243 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/glauciolabs/video-request-manager-frontend:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-frontend
+  template:
+    metadata:
+      labels:
+        app: admin-frontend
+    spec:
+      containers:
+        - name: admin-frontend
+          image: ghcr.io/glauciolabs/video-request-manager-admin-frontend:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3006
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 192Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: ghcr.io/glauciolabs/video-request-manager-gateway:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: ghcr.io/glauciolabs/video-request-manager-order-service:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+          env:
+            - name: PORT
+              value: "3001"
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: ghcr.io/glauciolabs/video-request-manager-user-service:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3002
+          env:
+            - name: PORT
+              value: "3002"
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: ghcr.io/glauciolabs/video-request-manager-notification-service:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3003
+          env:
+            - name: PORT
+              value: "3003"
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sla-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sla-service
+  template:
+    metadata:
+      labels:
+        app: sla-service
+    spec:
+      containers:
+        - name: sla-service
+          image: ghcr.io/glauciolabs/video-request-manager-sla-service:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3004
+          env:
+            - name: PORT
+              value: "3004"
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: report-service
+  template:
+    metadata:
+      labels:
+        app: report-service
+    spec:
+      containers:
+        - name: report-service
+          image: ghcr.io/glauciolabs/video-request-manager-report-service:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3005
+          env:
+            - name: PORT
+              value: "3005"
+          envFrom:
+            - configMapRef:
+                name: vrm-config
+            - secretRef:
+                name: vrm-secrets
