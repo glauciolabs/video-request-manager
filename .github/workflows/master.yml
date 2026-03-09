@@ -39,9 +39,10 @@ jobs:
       namespace_override: false
       kustomization_overlay: false
     secrets:
-      REGISTRY: ${{ secrets.REGISTRY }}
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      REGISTRY: ${{ secrets.REGISTRY != '' && secrets.REGISTRY || 'ghcr.io' }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_USERNAME || github.actor }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD != '' && secrets.REGISTRY_PASSWORD || secrets.GIT_REGISTRY_TOKEN }}
+      GIT_REGISTRY_TOKEN: ${{ secrets.GIT_REGISTRY_TOKEN }}
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       ARGOCD_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
