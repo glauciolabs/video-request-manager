@@ -5,4 +5,4 @@ app:
     registry: GitHubContainerRegistry
     repository: ghcr.io/glauciolabs/video-request-manager-notification-service
     tag: v0.1.0
-    platform: linux/amd64,linux/arm64
+    platform: linux/amd64
