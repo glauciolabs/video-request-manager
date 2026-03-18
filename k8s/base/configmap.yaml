@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vrm-config
+  namespace: video-request-manager
+data:
+  LOG_LEVEL: info
+  GATEWAY_PORT: "8080"
+  NEXT_PUBLIC_API_BASE_URL: "https://vrm.example.com/api"
+  NEXT_PUBLIC_DEFAULT_LOCALE: "pt-BR"
+  NEXT_PUBLIC_ENABLE_MSAL: "false"
+  ORDER_SERVICE_URL: "http://order-service:3001"
+  USER_SERVICE_URL: "http://user-service:3002"
+  NOTIFICATION_SERVICE_URL: "http://notification-service:3003"
+  SLA_SERVICE_URL: "http://sla-service:3004"
+  REPORT_SERVICE_URL: "http://report-service:3005"
+  POSTGRES_HOST: "vrm-postgres-rw"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "video_request_manager"

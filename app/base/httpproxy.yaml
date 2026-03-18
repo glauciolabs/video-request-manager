@@ -1,0 +1,49 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: video-request-manager
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    external-dns.alpha.kubernetes.io/target: "ddb0b78f-c9e7-43f8-887a-acf61e79133c.cfargotunnel.com"
+spec:
+  virtualhost:
+    fqdn: form-video-request.glauciolabs.work
+  routes:
+    - conditions:
+        - prefix: /api
+      pathRewritePolicy:
+        replacePrefix:
+          - prefix: /api
+            replacement: /
+      services:
+        - name: api-gateway
+          port: 8080
+    - services:
+        - name: frontend
+          port: 3000
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: video-request-manager-admin
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    external-dns.alpha.kubernetes.io/target: "ddb0b78f-c9e7-43f8-887a-acf61e79133c.cfargotunnel.com"
+spec:
+  virtualhost:
+    fqdn: admin-video-request.glauciolabs.work
+  routes:
+    - conditions:
+        - prefix: /api
+      pathRewritePolicy:
+        replacePrefix:
+          - prefix: /api
+            replacement: /
+      services:
+        - name: api-gateway
+          port: 8080
+    - conditions:
+        - prefix: /
+      services:
+        - name: admin-frontend
+          port: 3006
