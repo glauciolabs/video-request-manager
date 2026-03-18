@@ -1,0 +1,19 @@
+<svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vrmGradA" x1="40" y1="44" x2="280" y2="276" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0F7B6C"/>
+      <stop offset="1" stop-color="#1AA4B1"/>
+    </linearGradient>
+    <linearGradient id="vrmGradB" x1="82" y1="120" x2="238" y2="204" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7FBFF"/>
+      <stop offset="1" stop-color="#DDEAF7"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="24" y="24" width="272" height="272" rx="72" fill="url(#vrmGradA)"/>
+  <path d="M90 136C90 122.745 100.745 112 114 112H226C239.255 112 250 122.745 250 136V206C250 219.255 239.255 230 226 230H114C100.745 230 90 219.255 90 206V136Z" fill="url(#vrmGradB)"/>
+  <path d="M67 154.375C67 145.883 73.8835 139 82.375 139H100V204H82.375C73.8835 204 67 197.116 67 188.625V154.375Z" fill="#C3D5E8"/>
+  <path d="M150 153.2C150 146.219 157.659 141.978 163.57 145.68L200.664 168.88C206.22 172.355 206.22 180.445 200.664 183.92L163.57 207.12C157.659 210.822 150 206.581 150 199.6V153.2Z" fill="#0F7B6C"/>
+  <circle cx="228" cy="90" r="22" fill="#0A5D52"/>
+  <circle cx="228" cy="90" r="10" fill="#F7FBFF"/>
+</svg>

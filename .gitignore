@@ -1,0 +1,27 @@
+# Node
+node_modules/
+.npm/
+
+# Builds
+.next/
+dist/
+build/
+coverage/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+snyk-reports/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+secret.yaml
+*vrm-secrets*
+app/production/vrm-secrets.yaml
+app/develop/vrm-secrets.yaml
