@@ -25,3 +25,5 @@ secret.yaml
 *vrm-secrets*
 app/production/vrm-secrets.yaml
 app/develop/vrm-secrets.yaml
+*secrets-dev.yaml
+*secrets-prod.yaml
