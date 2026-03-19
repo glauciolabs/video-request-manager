@@ -1,0 +1,21 @@
+{
+  "name": "video-request-manager",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "frontend",
+    "admin-frontend",
+    "gateway",
+    "services/*"
+  ],
+  "scripts": {
+    "dev:frontend": "npm --workspace frontend run dev",
+    "dev:admin-frontend": "npm --workspace admin-frontend run dev",
+    "dev:gateway": "npm --workspace gateway run dev",
+    "dev:order": "npm --workspace services/order-service run dev",
+    "dev:user": "npm --workspace services/user-service run dev",
+    "dev:notification": "npm --workspace services/notification-service run dev",
+    "dev:sla": "npm --workspace services/sla-service run dev",
+    "dev:report": "npm --workspace services/report-service run dev"
+  }
+}

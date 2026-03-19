@@ -1,0 +1,5 @@
+app:
+  name: video-request-manager
+  version: v0.1.0
+  project: video-request-manager
+  namespace: video-request-manager

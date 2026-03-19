@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: video-request-manager-develop
+  namespace: argocd
+spec:
+  project: video-request-manager
+  source:
+    repoURL: https://github.com/glauciolabs/video-request-manager
+    targetRevision: develop
+    path: app/develop
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: video-request-manager-develop
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true

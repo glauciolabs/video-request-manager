@@ -1,0 +1,8 @@
+app:
+  name: order-service
+  version: v0.1.0
+  container:
+    registry: GitHubContainerRegistry
+    repository: ghcr.io/glauciolabs/video-request-manager-order-service
+    tag: v0.1.0
+    platform: linux/amd64,linux/arm64
