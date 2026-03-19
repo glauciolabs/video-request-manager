@@ -1,0 +1,194 @@
+name: video-request-manager
+
+x-shared-env-file: &shared_env_file
+  - path: ../.env
+    required: false
+  - path: ../.env.local
+    required: false
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: vrm-postgres
+    environment:
+      POSTGRES_DB: video_request_manager
+      POSTGRES_USER: video_request
+      POSTGRES_PASSWORD: video_request
+    ports:
+      - "5432:5432"
+    volumes:
+      - vrm-pgdata:/var/lib/postgresql/data
+      - ../database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U video_request -d video_request_manager"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    image: vrm/user-service:local
+    env_file: *shared_env_file
+    environment:
+      PORT: 3002
+      LOG_LEVEL: info
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-change-me-too}
+      TURNSTILE_ENABLED: ${TURNSTILE_ENABLED:-false}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      TURNSTILE_VERIFY_URL: ${TURNSTILE_VERIFY_URL:-https://challenges.cloudflare.com/turnstile/v0/siteverify}
+      TURNSTILE_TIMEOUT_MS: ${TURNSTILE_TIMEOUT_MS:-8000}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: video_request_manager
+      POSTGRES_USER: video_request
+      POSTGRES_PASSWORD: video_request
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    image: vrm/order-service:local
+    env_file: *shared_env_file
+    environment:
+      PORT: 3001
+      LOG_LEVEL: info
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-change-me-too}
+      NOTIFICATION_SERVICE_URL: http://notification-service:3003/notifications
+      TRACKING_BASE_URL: ${TRACKING_BASE_URL:-http://localhost:3000/tracking}
+      PIX_PAYMENT_KEY: ${PIX_PAYMENT_KEY:-}
+      BUSINESS_TIMEZONE: ${BUSINESS_TIMEZONE:-America/Sao_Paulo}
+      ORDER_DATA_BACKEND: ${ORDER_DATA_BACKEND:-memory}
+      D1_ACCOUNT_ID: ${D1_ACCOUNT_ID:-}
+      D1_DATABASE_ID: ${D1_DATABASE_ID:-}
+      D1_API_TOKEN: ${D1_API_TOKEN:-}
+      D1_API_BASE_URL: ${D1_API_BASE_URL:-https://api.cloudflare.com/client/v4}
+      D1_TIMEOUT_MS: ${D1_TIMEOUT_MS:-8000}
+      TURNSTILE_ENABLED: ${TURNSTILE_ENABLED:-false}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      TURNSTILE_VERIFY_URL: ${TURNSTILE_VERIFY_URL:-https://challenges.cloudflare.com/turnstile/v0/siteverify}
+      TURNSTILE_TIMEOUT_MS: ${TURNSTILE_TIMEOUT_MS:-8000}
+      ADMIN_NOTIFICATION_EMAILS: ${ADMIN_NOTIFICATION_EMAILS:-}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: video_request_manager
+      POSTGRES_USER: video_request
+      POSTGRES_PASSWORD: video_request
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    image: vrm/notification-service:local
+    env_file: *shared_env_file
+    environment:
+      PORT: 3003
+      LOG_LEVEL: info
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-change-me-too}
+
+  sla-service:
+    build:
+      context: .
+      dockerfile: sla-service/Dockerfile
+    image: vrm/sla-service:local
+    environment:
+      PORT: 3004
+      LOG_LEVEL: info
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-change-me-too}
+
+  report-service:
+    build:
+      context: .
+      dockerfile: report-service/Dockerfile
+    image: vrm/report-service:local
+    environment:
+      PORT: 3005
+      LOG_LEVEL: info
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-change-me-too}
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    image: vrm/api-gateway:local
+    environment:
+      GATEWAY_PORT: 8080
+      LOG_LEVEL: info
+      TRUST_PROXY: ${TRUST_PROXY:-true}
+      UPSTREAM_TIMEOUT_MS: ${UPSTREAM_TIMEOUT_MS:-30000}
+      AUTH_MODE: ${AUTH_MODE:-none}
+      FORM_ENTRY_ENABLED: ${FORM_ENTRY_ENABLED:-false}
+      FORM_ENTRY_PASSWORD: ${FORM_ENTRY_PASSWORD:-}
+      FORM_ACCESS_TOKEN_TTL: ${FORM_ACCESS_TOKEN_TTL:-2h}
+      FORM_ACCESS_RATE_LIMIT_MAX: ${FORM_ACCESS_RATE_LIMIT_MAX:-10}
+      FORM_ACCESS_MAX_ATTEMPTS: ${FORM_ACCESS_MAX_ATTEMPTS:-5}
+      FORM_ACCESS_BLOCK_MINUTES: ${FORM_ACCESS_BLOCK_MINUTES:-15}
+      FORM_ACCESS_JWT_SECRET: ${FORM_ACCESS_JWT_SECRET:-}
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-change-me-too}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:3006}
+      ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:-}
+      ENTRA_CLIENT_ID: ${ENTRA_CLIENT_ID:-}
+      ENTRA_ADMIN_ROLE: ${ENTRA_ADMIN_ROLE:-}
+      USER_SERVICE_URL: http://user-service:3002
+      ORDER_SERVICE_URL: http://order-service:3001
+      NOTIFICATION_SERVICE_URL: http://notification-service:3003
+      SLA_SERVICE_URL: http://sla-service:3004
+      REPORT_SERVICE_URL: http://report-service:3005
+    depends_on:
+      - user-service
+      - order-service
+      - notification-service
+      - sla-service
+      - report-service
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: vrm/frontend:local
+    environment:
+      NEXT_PUBLIC_DEFAULT_LOCALE: en-US
+      NEXT_PUBLIC_ENABLE_MSAL: "false"
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8080
+      FORM_ENTRY_ENABLED: ${FORM_ENTRY_ENABLED:-false}
+      NEXT_PUBLIC_FORM_ENTRY_ENABLED: ${NEXT_PUBLIC_FORM_ENTRY_ENABLED:-false}
+      NEXT_PUBLIC_TURNSTILE_ENABLED: ${NEXT_PUBLIC_TURNSTILE_ENABLED:-false}
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
+      PIX_PAYMENT_KEY: ${PIX_PAYMENT_KEY:-}
+      NEXT_PUBLIC_PIX_PAYMENT_KEY: ${NEXT_PUBLIC_PIX_PAYMENT_KEY:-}
+    depends_on:
+      - api-gateway
+    ports:
+      - "3000:3000"
+
+  admin-frontend:
+    build:
+      context: .
+      dockerfile: admin-frontend/Dockerfile
+    image: vrm/admin-frontend:local
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8080
+      NEXT_PUBLIC_AUTH_MODE: ${AUTH_MODE:-none}
+      NEXT_PUBLIC_TURNSTILE_ENABLED: ${NEXT_PUBLIC_TURNSTILE_ENABLED:-false}
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
+    depends_on:
+      - api-gateway
+    ports:
+      - "3006:3006"
+
+volumes:
+  vrm-pgdata:

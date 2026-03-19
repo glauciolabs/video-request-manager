@@ -1,0 +1,29 @@
+snyk_global:
+  severity_threshold: high
+
+snyk_code:
+  status: enabled
+  monitor: disabled
+  report: enabled
+  fail_on_issues: enabled
+  severity_threshold: high
+
+snyk_iac:
+  status: enabled
+  report: enabled
+  fail_on_issues: enabled
+  severity_threshold: high
+
+snyk_oss:
+  status: enabled
+  monitor: enabled
+  report: enabled
+  fail_on_issues: enabled
+  severity_threshold: high
+
+snyk_container:
+  status: enabled
+  monitor: enabled
+  report: enabled
+  fail_on_issues: enabled
+  severity_threshold: high
