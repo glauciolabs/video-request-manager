@@ -9,8 +9,8 @@ permissions:
 
 on:
   push:
-    branches-ignore:
-      - master
+    branches:
+      - develop
   workflow_dispatch:
     inputs:
       pipeline_mode:
