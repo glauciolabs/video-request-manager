@@ -1,6 +1,6 @@
 app:
   name: frontend
-  version: v0.1.0
+  version: v0.1.1
   container:
     registry: GitHubContainerRegistry
     repository: ghcr.io/glauciolabs/video-request-manager-frontend
