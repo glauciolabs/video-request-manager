@@ -4,5 +4,5 @@ app:
   container:
     registry: GitHubContainerRegistry
     repository: ghcr.io/glauciolabs/video-request-manager-frontend
-    tag: v0.1.0
+    tag: v0.1.1
     platform: linux/amd64,linux/arm64
